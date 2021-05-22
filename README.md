@@ -4,6 +4,7 @@ Clone of utsname.h library for linux. Made specifically for windows can be used 
 * Posix Regex
 # Todo
 * replace somethings that use regex with winreg
+
 # Examples
 
 * Check basic info
