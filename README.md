@@ -17,14 +17,15 @@ int main() {
 	printf("Operating System: %s\n", sys.sysname);
 	printf("Hostname: %s\n", sys.nodename);
 	printf("Processor Architecture: %s\n", sys.machine);
+	printf("Processor Name: %s\n", sys.processor);
 	printf("Virtualization is Enabled: %d\n", sys.vt_supported);
 	printf("Version: %s\n", sys.version);
 	printf("Release: %s\n", sys.release);
+	printf("Windows Version: %s\n", sys.win_version);
 	printf("full version: %s\n", sys.full_version);
 	system("pause");
 	return 0;
-}
-```
+}```
   * Executing and running
 ```
 gcc <filename> -lregex -lws2_32 -o <output>
