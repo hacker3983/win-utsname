@@ -11,11 +11,6 @@
 #define platform "Windows"
 #endif
 
-/* TODO Get more information using registry keys
-   registry keys that maybe useful are:
-   HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\BIOS
-   HKEY_LOCAL_MACHINE\HARDWARE\DESCRIPTION\System\CentralProcessor\0
-*/
 struct win_utsname {
 	char sysname[65];
 	char nodename[65];
@@ -23,7 +18,7 @@ struct win_utsname {
 	char version[65];
 	char win_version[65];
 	char machine[65];
-	char processor[65];
+	char processor[130];
 	char full_version[65];
 	bool vt_supported;
 };
@@ -67,19 +62,12 @@ void win_getversion(struct win_utsname* __sys__) {
    Version 1909
 */
 void win_getwinversion(struct win_utsname* __sys__) {
-	regex_t preg;
-	int idx = 0;
-	char* pattern="[^REG_SZ ]+$.*", buff[500], c;
-	FILE* f = popen("reg QUERY \"HKLM\\Software\\Microsoft\\Windows NT\\CurrentVersion\" /v DisplayVersion", "r");
-	memset(buff, 0, 500);
+	HKEY hkey;
+	RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows NT\\CurrentVersion", 0, KEY_QUERY_VALUE, &hkey);
 	memset(__sys__->win_version, 0, 65);
-	while((c=fgetc(f)) != EOF) { if(c != '\n') { buff[idx] = c; idx++; } }
-	regmatch_t pmatch[1];
-	regcomp(&preg, pattern, REG_EXTENDED);
-	regexec(&preg, buff, 2, pmatch, REG_NOTBOL); idx = 0;
-	for(int i=pmatch[0].rm_so;i<pmatch[0].rm_eo;i++) { __sys__->win_version[idx] = buff[i]; idx++; }
-	regfree(&preg);
-	fclose(f);
+	long unsigned int size = 65;
+	RegQueryValueEx(hkey, "DisplayVersion", NULL, NULL, __sys__->win_version, &size);
+	RegCloseKey(hkey);
 }
 
 // Get windows release stores it in win_utsname structure
@@ -130,16 +118,14 @@ void win_getarchitecture(struct win_utsname* __sys__) {
 		default: strcpy(__sys__->machine, "UNKNOWN");
 	}
 }
-/* According to https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-system_info
-   these macros or variables represent different processor types:
-   PROCESSOR_INTEL_386 (386)
-   PROCESSOR_INTEL_486 (486)
-   PROCESSOR_INTEL_PENTIUM (586)
-   PROCESSOR_INTEL_IA64 (2200)
-   PROCESSOR_AMD_X8664 (8664)
-   PROCESSOR_ARM (Reserved)
-*/
-
+// Gets Processor name
+void win_getprocessor(struct win_utsname* __sys__) {
+	HKEY hkey;
+	long unsigned int size = 130;
+	RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment", 0, KEY_QUERY_VALUE, &hkey);
+	RegQueryValueEx(hkey, "PROCESSOR_IDENTIFIER", NULL, NULL, __sys__->processor, &size);
+	RegCloseKey(hkey);
+}
 // Gets system information stores information in structure win_utsname
 void win_uname(struct win_utsname* __sys__) {
 	WSADATA wsa;
@@ -149,6 +135,7 @@ void win_uname(struct win_utsname* __sys__) {
 	win_getversion(__sys__);
 	win_getrelease(__sys__);
 	win_getwinversion(__sys__);
+	win_getprocessor(__sys__);
 	gethostname(__sys__->nodename, 256);
 	strcpy(__sys__->sysname, platform);
 	__sys__->vt_supported = win_vtsupported();
