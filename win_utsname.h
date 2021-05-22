@@ -32,6 +32,7 @@ void win_getfullversion(struct win_utsname* __sys__) {
 	while((c = fgetc(f)) != EOF) { if(c != '\n') { __sys__->full_version[i] = c; i++; } }
 	fclose(f);
 }
+//
 /* # Examples of VER command output:
    #   Windows 2000:  Microsoft Windows 2000 [Version 5.00.2195]
    #   Windows XP:    Microsoft Windows XP [Version 5.1.2600]
