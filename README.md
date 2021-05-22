@@ -6,9 +6,8 @@ Clone of utsname.h library for linux. Made specifically for windows can be used 
 * replace somethings that use regex with winreg
 
 # Examples
-
-  * Check basic info
-  ```c
+* Check basic info
+```c
 #include <stdio.h>
 #include "win_utsname.h"
 int main() {
@@ -25,9 +24,10 @@ int main() {
 	printf("full version: %s\n", sys.full_version);
 	system("pause");
 	return 0;
-}```
-  * Executing and running
+}
 ```
+* Executing and running
+```bash
 gcc <filename> -lregex -lws2_32 -o <output>
 ./<output>
 ```
