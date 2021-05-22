@@ -7,8 +7,8 @@ Clone of utsname.h library for linux. Made specifically for windows can be used 
 
 # Examples
 
-* Check basic info
-```c
+  * Check basic info
+  ```c
 #include <stdio.h>
 #include "win_utsname.h"
 int main() {
@@ -25,7 +25,7 @@ int main() {
 	return 0;
 }
 ```
-* Executing and running
+  * Executing and running
 ```
 gcc <filename> -lregex -lws2_32 -o <output>
 ./<output>
